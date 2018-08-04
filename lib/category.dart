@@ -5,6 +5,9 @@
 // To keep your imports tidy, follow the ordering guidelines at
 // https://www.dartlang.org/guides/language/effective-dart/style#ordering
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
+import 'unit.dart';
+import 'converter_route.dart';
 
 /// A custom [Category] widget.
 ///
@@ -14,6 +17,7 @@ class Category extends StatelessWidget {
   final String name;
   final IconData iconLocation;
   final ColorSwatch color;
+  final List<Unit> units;
 
   /// Creates a [Category].
   ///
@@ -22,14 +26,42 @@ class Category extends StatelessWidget {
   // TODO: You'll need the name, color, and iconLocation from main.dart
   const Category({
     Key key,
-    this.name,
-    this.color,
-    this.iconLocation,
-  }) : super(key: key);
+    @required this.name,
+    @required this.color,
+    @required this.iconLocation,
+    @required this.units,
+  })  : assert(name != null),
+        assert(color != null),
+        assert(iconLocation != null),
+        assert(units != null),
+        super(key: key);
 
   /// Builds a custom widget that shows [Category] information.
   ///
   /// This information includes the icon, name, and color for the [Category].
+  void _navigateToConverter(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute<Null>(
+      builder: (BuildContext context) {
+        return Scaffold(
+          appBar: AppBar(
+            elevation: 1.0,
+            title: Text(
+              name,
+              style: Theme.of(context).textTheme.display1,
+            ),
+            centerTitle: true,
+            backgroundColor: color,
+          ),
+          body: ConverterRoute(
+            color: color,
+            name: name,
+            units: units,
+          ),
+        );
+      },
+    ));
+  }
+
   @override
   // This `context` parameter describes the location of this widget in the
   // widget tree. It can be used for obtaining Theme data from the nearest
@@ -45,9 +77,7 @@ class Category extends StatelessWidget {
           splashColor: color,
           borderRadius: BorderRadius.circular(100.0),
           highlightColor: color,
-          onTap: () {
-            print("I was tapped");
-          },
+          onTap: () => _navigateToConverter(context),
           child: Padding(
             padding: EdgeInsets.all(8.0),
             child: Row(
